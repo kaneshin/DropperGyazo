@@ -1,0 +1,14 @@
+{
+  "dropbox": {
+    "app_key": "",
+    "app_secret": "",
+    "access_key": "",
+    "access_secret": ""
+  },
+  "twitter": {
+    "consumer_token": "",
+    "consumer_secret": "",
+    "access_token": "",
+    "access_secret": ""
+  }
+}

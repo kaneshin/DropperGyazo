@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'dropbox_sdk'
+require 'open-uri'
+require 'twitter'
+
+# application name
+application = 'DropperGyazo'
+
+# get dropbox keys and twitter keys
+user = IO.popen("whoami", "r+").gets.chomp
+keysfile_name = "keys.json"
+keysfile = "/Users/#{user}/Library/#{application}/#{keysfile_name}"
+
+if !File.exist?(keysfile) then
+  raise "Create a #{keysfile} file with a dropbox app keys and a twitter keys optionally. See #{keysfile}.sample file."
+end
+
+settings = JSON.parse(File.read(keysfile))
+dropbox = settings['dropbox']
+twitter = settings['twitter']
+
+# capture png file
+tmpfile_name = Time.new.strftime("%Y%m%d%H%M%S.png")
+tmpfile = "/tmp/#{tmpfile_name}"
+imagefile = ARGV[1]
+
+if imagefile && File.exist?(imagefile) then
+  system "sips -s format png \"#{imagefile}\" --out \"#{tmpfile}\""
+else
+  system "screencapture -i \"#{tmpfile}\""
+  if File.exist?(tmpfile) then
+    system "sips -d profile --deleteColorManagementProperties \"#{tmpfile}\""
+  end
+end
+
+if !File.exist?(tmpfile) then
+  exit
+end
+
+imagedata = File.read(tmpfile)
+File.delete(tmpfile)
+
+# put image in dropbox
+session = DropboxSession.new(dropbox['app_key'], dropbox['app_secret'])
+session.set_access_token(dropbox['access_key'], dropbox['access_secret'])
+session.get_access_token
+client = DropboxClient.new(session, :dropbox)
+
+# get dropbox account id
+info = client.account_info()
+uid = info['uid']
+
+# upload image
+client.put_file("/Public/#{application}/#{tmpfile_name}", imagedata)
+
+# write url to copyboard
+file_url = "https://dl.dropbox.com/u/#{uid}/#{application}/" + tmpfile_name
+system "echo -n #{file_url} | pbcopy"
+
+# open url on browser
+begin
+  open(file_url){|f|
+    system "open #{file_url}"
+  }
+rescue
+  system "open #{file_url}"
+end
+
+# share link on twitter
+Twitter.configure do |config|
+  config.consumer_key = twitter['consumer_token']
+  config.consumer_secret = twitter['consumer_secret']
+  config.oauth_token = twitter['access_token']
+  config.oauth_token_secret = twitter['access_secret']
+end
+
+# tweet with link
+tweet = "Screen captured: #{file_url}"
+Twitter.update(tweet.chomp)
+
