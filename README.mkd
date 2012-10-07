@@ -1,0 +1,73 @@
+DropperGyazo
+============
+
+Gyazo on Dropbox and Twitter
+
+Gyazo is a very useful. An awesome tool!!
+
+However, I felt a little bit unuseful about posting to server.
+
+DropperGyazo should be running on MacOSX.
+
+How to use it?
+--------------
+
+Prepare tokens of Dropbox, and tokens of Twitter optionally (if you want to share).
+
+And then, save a file as a json into keysfile's directory.
+
+
+    keysfile_name = "keys.json"
+    keysfile = "/Users/#{user}/Library/#{application}/#{keysfile_name}"
+
+
+keys.json
+
+
+    {
+        "dropbox": {
+            "app_key": "",
+            "app_secret": "",
+            "access_key": "",
+            "access_secret": ""
+        },
+        "twitter": {
+            "consumer_token": "",
+            "consumer_secret": "",
+            "access_token": "",
+            "access_secret": ""
+        }
+    }
+
+
+###Gemfiles
+
+Needs Gemfiles
+
+- rubygems
+- dropbox-sdk
+- open-url
+- twitter
+
+
+Modifier
+--------
+
+Shintaro Kaneko <kaneshin.jp@gmail.com>
+
+
+# Gyazo
+
+Copyright (c) 2009 Toshiyuki Masui
+This software is licensed under the GPL
+
+For more details, see
+http://gyazo.com/
+
+Special Thanks:
+Icon Designed by Takeru Yoshihara
+
+There are several versions of Gyazo:
+Gyazo for Mac OS X: originaly developed by Toshiyuki Masui,
+Gyazo for Windows (Gyazowin)  and
+Gyazo for Linux.
